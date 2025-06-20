@@ -805,5 +805,26 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
+
+    <script>
+      /**  Listen for the parent asking for a save, then return the bytes  **/
+      window.addEventListener('message', async (e) => {
+        if (e.data?.type !== 'REQUEST_SAVE') return;
+
+        const pdfDoc = window.PDFViewerApplication?.pdfDocument;
+        if (!pdfDoc) return;          // PDF still loading
+
+        // ⇩ Built-in incremental save: returns a Uint8Array that already
+        //   contains all new/edited annotations
+        const bytes = await pdfDoc.saveDocument();  // :contentReference[oaicite:0]{index=0}
+
+        // Transfer the ArrayBuffer back to React (zero-copy)
+        e.source.postMessage(
+          { type: 'PDF_BYTES', bytes },
+          e.origin,
+          [bytes.buffer]
+        );
+      });
+    </script>
   </body>
 </html>
