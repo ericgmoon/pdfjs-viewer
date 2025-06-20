@@ -307,7 +307,7 @@
 
   .popup {
     background-color: rgb(255 255 153);
-    color: black;
+    color: red;
     box-shadow: 0 calc(2px * var(--total-scale-factor))
       calc(5px * var(--total-scale-factor)) rgb(136 136 136);
     border-radius: calc(2px * var(--total-scale-factor));

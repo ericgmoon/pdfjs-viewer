@@ -4136,8 +4136,8 @@ class LineAnnotation extends MarkupAnnotation {
     }
 
     if (!this.appearance) {
-      // The default stroke color is black.
-      const strokeColor = this.color ? getPdfColorArray(this.color) : [0, 0, 0];
+      // The default stroke color is red.
+      const strokeColor = this.color ? getPdfColorArray(this.color) : [1, 0, 0];
       const strokeAlpha = dict.get("CA");
 
       const interiorColor = getRgbColor(dict.getArray("IC"), null);
@@ -4196,8 +4196,8 @@ class SquareAnnotation extends MarkupAnnotation {
     this.data.noHTML = false;
 
     if (!this.appearance) {
-      // The default stroke color is black.
-      const strokeColor = this.color ? getPdfColorArray(this.color) : [0, 0, 0];
+      // The default stroke color is red.
+      const strokeColor = this.color ? getPdfColorArray(this.color) : [1, 0, 0];
       const strokeAlpha = dict.get("CA");
 
       const interiorColor = getRgbColor(dict.getArray("IC"), null);
@@ -4243,8 +4243,8 @@ class CircleAnnotation extends MarkupAnnotation {
     this.data.annotationType = AnnotationType.CIRCLE;
 
     if (!this.appearance) {
-      // The default stroke color is black.
-      const strokeColor = this.color ? getPdfColorArray(this.color) : [0, 0, 0];
+      // The default stroke color is red.
+      const strokeColor = this.color ? getPdfColorArray(this.color) : [1, 0, 0];
       const strokeAlpha = dict.get("CA");
 
       const interiorColor = getRgbColor(dict.getArray("IC"), null);
@@ -4328,8 +4328,8 @@ class PolylineAnnotation extends MarkupAnnotation {
     const vertices = (this.data.vertices = Float32Array.from(rawVertices));
 
     if (!this.appearance) {
-      // The default stroke color is black.
-      const strokeColor = this.color ? getPdfColorArray(this.color) : [0, 0, 0];
+      // The default stroke color is red.
+      const strokeColor = this.color ? getPdfColorArray(this.color) : [1, 0, 0];
       const strokeAlpha = dict.get("CA");
 
       const borderWidth = this.borderStyle.width || 1,
@@ -4427,8 +4427,8 @@ class InkAnnotation extends MarkupAnnotation {
     }
 
     if (!this.appearance) {
-      // The default stroke color is black.
-      const strokeColor = this.color ? getPdfColorArray(this.color) : [0, 0, 0];
+      // The default stroke color is red.
+      const strokeColor = this.color ? getPdfColorArray(this.color) : [1, 0, 0];
       const strokeAlpha = dict.get("CA");
 
       const borderWidth = this.borderStyle.width || 1,
@@ -4809,10 +4809,10 @@ class UnderlineAnnotation extends MarkupAnnotation {
     const quadPoints = (this.data.quadPoints = getQuadPoints(dict, null));
     if (quadPoints) {
       if (!this.appearance) {
-        // Default color is black
+        // Default color is red
         const strokeColor = this.color
           ? getPdfColorArray(this.color)
-          : [0, 0, 0];
+          : [1, 0, 0];
         const strokeAlpha = dict.get("CA");
 
         // The values 0.571 and 1.3 below corresponds to what Acrobat is doing.
@@ -4847,10 +4847,10 @@ class SquigglyAnnotation extends MarkupAnnotation {
     const quadPoints = (this.data.quadPoints = getQuadPoints(dict, null));
     if (quadPoints) {
       if (!this.appearance) {
-        // Default color is black
+        // Default color is red
         const strokeColor = this.color
           ? getPdfColorArray(this.color)
-          : [0, 0, 0];
+          : [1, 0, 0];
         const strokeAlpha = dict.get("CA");
 
         this._setDefaultAppearance({
@@ -4891,10 +4891,10 @@ class StrikeOutAnnotation extends MarkupAnnotation {
     const quadPoints = (this.data.quadPoints = getQuadPoints(dict, null));
     if (quadPoints) {
       if (!this.appearance) {
-        // Default color is black
+        // Default color is red
         const strokeColor = this.color
           ? getPdfColorArray(this.color)
-          : [0, 0, 0];
+          : [1, 0, 0];
         const strokeAlpha = dict.get("CA");
 
         this._setDefaultAppearance({

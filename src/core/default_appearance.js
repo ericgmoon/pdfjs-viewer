@@ -47,7 +47,7 @@ class DefaultAppearanceEvaluator extends EvaluatorPreprocessor {
     const result = {
       fontSize: 0,
       fontName: "",
-      fontColor: /* black = */ new Uint8ClampedArray(3),
+      fontColor: /* red = */ new Uint8ClampedArray([255, 0, 0]),
     };
 
     try {
@@ -116,7 +116,7 @@ class AppearanceStreamEvaluator extends EvaluatorPreprocessor {
       scaleFactor: 1,
       fontSize: 0,
       fontName: "",
-      fontColor: /* black = */ new Uint8ClampedArray(3),
+      fontColor: /* red = */ new Uint8ClampedArray([255, 0, 0]),
       fillColorSpace: ColorSpaceUtils.gray,
     };
     let breakLoop = false;

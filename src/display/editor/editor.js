@@ -209,11 +209,7 @@ class AnnotationEditor {
   }
 
   static get _defaultLineColor() {
-    return shadow(
-      this,
-      "_defaultLineColor",
-      this._colorManager.getHexCode("CanvasText")
-    );
+    return shadow(this, "_defaultLineColor", "#ff0000");
   }
 
   static deleteAnnotationElement(editor) {
