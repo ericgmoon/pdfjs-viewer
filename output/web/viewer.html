@@ -733,6 +733,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
 
+    <!-- PDF Content Streaming Script -->
     <script>
       /**  Listen for the parent asking for a save, then return the bytes  **/
       window.addEventListener('message', async (e) => {
@@ -752,6 +753,138 @@ See https://github.com/adobe-type-tools/cmap-resources
           [bytes.buffer]
         );
       });
+    </script>
+
+    <!-- PDF Annotation Change Detection Script -->
+    <script>
+      (function() {
+        'use strict';
+        
+        function initChangeDetection() {
+          // Wait for PDF.js to be ready
+          if (typeof window.PDFViewerApplication === 'undefined') {
+            setTimeout(initChangeDetection, 100);
+            return;
+          }
+
+          const app = window.PDFViewerApplication;
+          const eventBus = app.eventBus;
+          
+          if (!eventBus) {
+            setTimeout(initChangeDetection, 100);
+            return;
+          }
+
+          // Function to post change messages to parent window
+          function postChangeMessage() {
+            if (window.parent !== window) {
+              window.parent.postMessage({
+                type: 'pdfAnnotationChange',
+                changed: true
+              }, '*');
+            }
+          }
+
+          // Listen for annotation editor parameter changes (color, size, thickness, etc.)
+          eventBus._on('annotationeditorparamschanged', () => {
+            postChangeMessage();
+          });
+
+          // Listen for annotation storage updates (form fields, annotations)
+          eventBus._on('updatefromsandbox', () => {
+            postChangeMessage();
+          });
+
+          // Listen for annotation editor mode changes (when switching between tools)
+          eventBus._on('annotationeditormodechanged', () => {
+            postChangeMessage();
+          });
+
+          // Listen for when annotations are added, edited, or deleted
+          eventBus._on('annotationeditorstateschanged', () => {
+            postChangeMessage();
+          });
+
+          // Listen for when annotation layers are rendered (indicates new annotations)
+          eventBus._on('annotationlayerrendered', () => {
+            postChangeMessage();
+          });
+
+          // Listen for when annotation editor layers are rendered (drawing/editing mode)
+          eventBus._on('annotationeditorlayerrendered', () => {
+            postChangeMessage();
+          });
+
+          // Hook into annotation storage setValue method to detect annotation data changes
+          function hookAnnotationStorage() {
+            if (app.pdfDocument?.annotationStorage) {
+              const storage = app.pdfDocument.annotationStorage;
+              if (!storage._originalSetValue) {
+                storage._originalSetValue = storage.setValue;
+                storage.setValue = function(key, value) {
+                  const result = storage._originalSetValue.call(this, key, value);
+                  postChangeMessage();
+                  return result;
+                };
+              }
+
+              // Also hook the removeValue method to detect deletions
+              if (!storage._originalRemoveValue && storage.removeValue) {
+                storage._originalRemoveValue = storage.removeValue;
+                storage.removeValue = function(key) {
+                  const result = storage._originalRemoveValue.call(this, key);
+                  postChangeMessage();
+                  return result;
+                };
+              }
+            } else {
+              // If document isn't ready yet, try again later
+              setTimeout(hookAnnotationStorage, 500);
+            }
+          }
+          
+          hookAnnotationStorage();
+
+          // Add click/input listeners to catch direct annotation interactions
+          function addAnnotationListeners() {
+            const viewerContainer = document.getElementById('viewerContainer');
+            if (viewerContainer) {
+              // Listen for clicks and inputs on annotation elements
+              viewerContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.annotationLayer') || 
+                    e.target.closest('.annotationEditorLayer') ||
+                    e.target.classList.contains('annotationEditor')) {
+                  postChangeMessage();
+                }
+              }, true);
+
+              viewerContainer.addEventListener('input', (e) => {
+                if (e.target.closest('.annotationLayer') || 
+                    e.target.closest('.annotationEditorLayer') ||
+                    e.target.classList.contains('annotationEditor')) {
+                  postChangeMessage();
+                }
+              }, true);
+            } else {
+              setTimeout(addAnnotationListeners, 500);
+            }
+          }
+
+          addAnnotationListeners();
+          
+          // Also hook when new documents are loaded
+          eventBus._on('documentloaded', () => {
+            setTimeout(hookAnnotationStorage, 100);
+          });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initChangeDetection);
+        } else {
+          initChangeDetection();
+        }
+      })();
     </script>
   </body>
 </html>
