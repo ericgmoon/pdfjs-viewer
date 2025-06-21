@@ -50,6 +50,7 @@ const __dirname = import.meta.dirname;
 const BUILD_DIR = "build/";
 const L10N_DIR = "l10n/";
 const TEST_DIR = "test/";
+const EXPORT_DIR = "output/";
 
 const BASELINE_DIR = BUILD_DIR + "baseline/";
 const MOZCENTRAL_BASELINE_DIR = BUILD_DIR + "mozcentral.baseline/";
@@ -1166,6 +1167,18 @@ gulp.task(
       const defines = { ...DEFINES, GENERIC: true };
 
       return buildGeneric(defines, GENERIC_DIR);
+    },
+    function copyToExport() {
+      console.log();
+      console.log("### Copying generic build to export folder");
+
+      // Clean the export directory first
+      fs.rmSync(EXPORT_DIR, { recursive: true, force: true });
+
+      // Copy all files from the generic build directory to export
+      return gulp
+        .src([GENERIC_DIR + "**/*"], { encoding: false })
+        .pipe(gulp.dest(EXPORT_DIR));
     }
   )
 );
