@@ -828,6 +828,7 @@ See https://github.com/adobe-type-tools/cmap-resources
       });
     </script>
 
+    <!-- PDF Annotation Change Detection Script -->
     <script>
       (function() {
         'use strict';
@@ -848,33 +849,43 @@ See https://github.com/adobe-type-tools/cmap-resources
           }
 
           // Function to post change messages to parent window
-          function postChangeMessage(eventType, details, key, value) {
+          function postChangeMessage() {
             if (window.parent !== window) {
               window.parent.postMessage({
                 type: 'pdfAnnotationChange',
-                data: {
-                  eventType: eventType,
-                  details: details,
-                  key: key,
-                  value: value
-                }
+                changed: true
               }, '*');
             }
           }
 
           // Listen for annotation editor parameter changes (color, size, thickness, etc.)
-          eventBus._on('annotationeditorparamschanged', (evt) => {
-            postChangeMessage('annotationeditorparamschanged', evt);
+          eventBus._on('annotationeditorparamschanged', () => {
+            postChangeMessage();
           });
 
           // Listen for annotation storage updates (form fields, annotations)
-          eventBus._on('updatefromsandbox', (evt) => {
-            postChangeMessage('updatefromsandbox', evt);
+          eventBus._on('updatefromsandbox', () => {
+            postChangeMessage();
           });
 
           // Listen for annotation editor mode changes (when switching between tools)
-          eventBus._on('annotationeditormodechanged', (evt) => {
-            postChangeMessage('annotationeditormodechanged', evt);
+          eventBus._on('annotationeditormodechanged', () => {
+            postChangeMessage();
+          });
+
+          // Listen for when annotations are added, edited, or deleted
+          eventBus._on('annotationeditorstateschanged', () => {
+            postChangeMessage();
+          });
+
+          // Listen for when annotation layers are rendered (indicates new annotations)
+          eventBus._on('annotationlayerrendered', () => {
+            postChangeMessage();
+          });
+
+          // Listen for when annotation editor layers are rendered (drawing/editing mode)
+          eventBus._on('annotationeditorlayerrendered', () => {
+            postChangeMessage();
           });
 
           // Hook into annotation storage setValue method to detect annotation data changes
@@ -885,7 +896,17 @@ See https://github.com/adobe-type-tools/cmap-resources
                 storage._originalSetValue = storage.setValue;
                 storage.setValue = function(key, value) {
                   const result = storage._originalSetValue.call(this, key, value);
-                  postChangeMessage('annotationStorageSet', undefined, key, value);
+                  postChangeMessage();
+                  return result;
+                };
+              }
+
+              // Also hook the removeValue method to detect deletions
+              if (!storage._originalRemoveValue && storage.removeValue) {
+                storage._originalRemoveValue = storage.removeValue;
+                storage.removeValue = function(key) {
+                  const result = storage._originalRemoveValue.call(this, key);
+                  postChangeMessage();
                   return result;
                 };
               }
@@ -896,6 +917,33 @@ See https://github.com/adobe-type-tools/cmap-resources
           }
           
           hookAnnotationStorage();
+
+          // Add click/input listeners to catch direct annotation interactions
+          function addAnnotationListeners() {
+            const viewerContainer = document.getElementById('viewerContainer');
+            if (viewerContainer) {
+              // Listen for clicks and inputs on annotation elements
+              viewerContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.annotationLayer') || 
+                    e.target.closest('.annotationEditorLayer') ||
+                    e.target.classList.contains('annotationEditor')) {
+                  postChangeMessage();
+                }
+              }, true);
+
+              viewerContainer.addEventListener('input', (e) => {
+                if (e.target.closest('.annotationLayer') || 
+                    e.target.closest('.annotationEditorLayer') ||
+                    e.target.classList.contains('annotationEditor')) {
+                  postChangeMessage();
+                }
+              }, true);
+            } else {
+              setTimeout(addAnnotationListeners, 500);
+            }
+          }
+
+          addAnnotationListeners();
           
           // Also hook when new documents are loaded
           eventBus._on('documentloaded', () => {
