@@ -860,9 +860,9 @@ See https://github.com/adobe-type-tools/cmap-resources
           }
 
           // Listen for annotation storage updates (form fields, annotations)
-          eventBus._on('updatefromsandbox', () => {
-            postChangeMessage('formFieldUpdate');
-          });
+          // eventBus._on('updatefromsandbox', () => {
+          //   postChangeMessage('formFieldUpdate');
+          // });
 
           // Listen for when annotations are added, edited, or deleted
           eventBus._on('annotationeditorstateschanged', () => {
@@ -870,14 +870,14 @@ See https://github.com/adobe-type-tools/cmap-resources
           });
 
           // Listen for when annotation layers are rendered (indicates new annotations)
-          eventBus._on('annotationlayerrendered', () => {
-            postChangeMessage('annotationLayerRendered');
-          });
+          // eventBus._on('annotationlayerrendered', () => {
+          //   postChangeMessage('annotationLayerRendered');
+          // });
 
-          // Listen for when annotation editor layers are rendered (drawing/editing mode)
-          eventBus._on('annotationeditorlayerrendered', () => {
-            postChangeMessage('annotationEditorLayerRendered');
-          });
+          // // Listen for when annotation editor layers are rendered (drawing/editing mode)
+          // eventBus._on('annotationeditorlayerrendered', () => {
+          //   postChangeMessage('annotationEditorLayerRendered');
+          // });
 
           // Hook into annotation storage setValue method to detect annotation data changes
           function hookAnnotationStorage() {
