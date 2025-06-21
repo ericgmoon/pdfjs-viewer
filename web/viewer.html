@@ -806,6 +806,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
 
+    <!-- PDF Content Streaming Script -->
     <script>
       /**  Listen for the parent asking for a save, then return the bytes  **/
       window.addEventListener('message', async (e) => {
@@ -825,6 +826,90 @@ See https://github.com/adobe-type-tools/cmap-resources
           [bytes.buffer]
         );
       });
+    </script>
+
+    <script>
+      (function() {
+        'use strict';
+        
+        function initChangeDetection() {
+          // Wait for PDF.js to be ready
+          if (typeof window.PDFViewerApplication === 'undefined') {
+            setTimeout(initChangeDetection, 100);
+            return;
+          }
+
+          const app = window.PDFViewerApplication;
+          const eventBus = app.eventBus;
+          
+          if (!eventBus) {
+            setTimeout(initChangeDetection, 100);
+            return;
+          }
+
+          // Function to post change messages to parent window
+          function postChangeMessage(eventType, details, key, value) {
+            if (window.parent !== window) {
+              window.parent.postMessage({
+                type: 'pdfAnnotationChange',
+                data: {
+                  eventType: eventType,
+                  details: details,
+                  key: key,
+                  value: value
+                }
+              }, '*');
+            }
+          }
+
+          // Listen for annotation editor parameter changes (color, size, thickness, etc.)
+          eventBus._on('annotationeditorparamschanged', (evt) => {
+            postChangeMessage('annotationeditorparamschanged', evt);
+          });
+
+          // Listen for annotation storage updates (form fields, annotations)
+          eventBus._on('updatefromsandbox', (evt) => {
+            postChangeMessage('updatefromsandbox', evt);
+          });
+
+          // Listen for annotation editor mode changes (when switching between tools)
+          eventBus._on('annotationeditormodechanged', (evt) => {
+            postChangeMessage('annotationeditormodechanged', evt);
+          });
+
+          // Hook into annotation storage setValue method to detect annotation data changes
+          function hookAnnotationStorage() {
+            if (app.pdfDocument?.annotationStorage) {
+              const storage = app.pdfDocument.annotationStorage;
+              if (!storage._originalSetValue) {
+                storage._originalSetValue = storage.setValue;
+                storage.setValue = function(key, value) {
+                  const result = storage._originalSetValue.call(this, key, value);
+                  postChangeMessage('annotationStorageSet', undefined, key, value);
+                  return result;
+                };
+              }
+            } else {
+              // If document isn't ready yet, try again later
+              setTimeout(hookAnnotationStorage, 500);
+            }
+          }
+          
+          hookAnnotationStorage();
+          
+          // Also hook when new documents are loaded
+          eventBus._on('documentloaded', () => {
+            setTimeout(hookAnnotationStorage, 100);
+          });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initChangeDetection);
+        } else {
+          initChangeDetection();
+        }
+      })();
     </script>
   </body>
 </html>
