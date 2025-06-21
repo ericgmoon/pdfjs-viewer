@@ -859,86 +859,10 @@ See https://github.com/adobe-type-tools/cmap-resources
             }
           }
 
-          // Listen for annotation storage updates (form fields, annotations)
-          // eventBus._on('updatefromsandbox', () => {
-          //   postChangeMessage('formFieldUpdate');
-          // });
-
-          // Listen for when annotations are added, edited, or deleted
-          eventBus._on('annotationeditorstateschanged', () => {
-            postChangeMessage('annotationStateChanged');
+          // Listen for when annotations are committed/completed
+          eventBus._on('annotationcommitted', (event) => {
+            postChangeMessage('annotationCommitted');
           });
-
-          // Listen for when annotation layers are rendered (indicates new annotations)
-          // eventBus._on('annotationlayerrendered', () => {
-          //   postChangeMessage('annotationLayerRendered');
-          // });
-
-          // // Listen for when annotation editor layers are rendered (drawing/editing mode)
-          // eventBus._on('annotationeditorlayerrendered', () => {
-          //   postChangeMessage('annotationEditorLayerRendered');
-          // });
-
-          // Hook into annotation storage setValue method to detect annotation data changes
-          // function hookAnnotationStorage() {
-          //   if (app.pdfDocument?.annotationStorage) {
-          //     const storage = app.pdfDocument.annotationStorage;
-          //     if (!storage._originalSetValue) {
-          //       storage._originalSetValue = storage.setValue;
-          //       storage.setValue = function(key, value) {
-          //         const result = storage._originalSetValue.call(this, key, value);
-          //         postChangeMessage('annotationDataChanged');
-          //         return result;
-          //       };
-          //     }
-
-          //     // Also hook the removeValue method to detect deletions
-          //     if (!storage._originalRemoveValue && storage.removeValue) {
-          //       storage._originalRemoveValue = storage.removeValue;
-          //       storage.removeValue = function(key) {
-          //         const result = storage._originalRemoveValue.call(this, key);
-          //         postChangeMessage('annotationDeleted');
-          //         return result;
-          //       };
-          //     }
-          //   } else {
-          //     // If document isn't ready yet, try again later
-          //     setTimeout(hookAnnotationStorage, 500);
-          //   }
-          // }
-          
-          // hookAnnotationStorage();
-
-          // // Add input listeners to catch direct annotation text editing
-          // function addAnnotationListeners() {
-          //   const viewerContainer = document.getElementById('viewerContainer');
-          //   if (viewerContainer) {
-          //     // Listen for text inputs on annotation elements
-          //     viewerContainer.addEventListener('input', (e) => {
-          //       if (e.target.closest('.annotationEditorLayer') ||
-          //           e.target.classList.contains('annotationEditor')) {
-          //         postChangeMessage('annotationDirectEdit');
-          //       }
-          //     }, true);
-
-          //     // Listen for focus to detect annotation editing start
-          //     viewerContainer.addEventListener('focusin', (e) => {
-          //       if (e.target.closest('.annotationEditorLayer') ||
-          //           e.target.classList.contains('annotationEditor')) {
-          //         postChangeMessage('annotationEditStart');
-          //       }
-          //     }, true);
-          //   } else {
-          //     setTimeout(addAnnotationListeners, 500);
-          //   }
-          // }
-
-          // addAnnotationListeners();
-          
-          // // Also hook when new documents are loaded
-          // eventBus._on('documentloaded', () => {
-          //   setTimeout(hookAnnotationStorage, 100);
-          // });
         }
 
         // Initialize when DOM is ready

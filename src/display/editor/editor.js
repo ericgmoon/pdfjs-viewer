@@ -424,6 +424,8 @@ class AnnotationEditor {
    */
   commit() {
     this.addToAnnotationStorage();
+    // Notify UI manager that this annotation has been committed/completed
+    this._uiManager.notifyAnnotationCommitted(this);
   }
 
   addToAnnotationStorage() {
