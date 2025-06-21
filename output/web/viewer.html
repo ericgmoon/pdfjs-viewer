@@ -776,13 +776,12 @@ See https://github.com/adobe-type-tools/cmap-resources
           }
 
           // Function to post change messages to parent window
-          function postChangeMessage(eventType, details = {}) {
+          function postChangeMessage(eventType) {
             if (window.parent !== window) {
               window.parent.postMessage({
                 type: 'pdfAnnotationChange',
                 eventType: eventType,
-                timestamp: Date.now(),
-                ...details
+                timestamp: Date.now()
               }, '*');
             }
           }
@@ -793,24 +792,18 @@ See https://github.com/adobe-type-tools/cmap-resources
           });
 
           // Listen for when annotations are added, edited, or deleted
-          eventBus._on('annotationeditorstateschanged', (evt) => {
-            postChangeMessage('annotationStateChanged', {
-              details: evt
-            });
+          eventBus._on('annotationeditorstateschanged', () => {
+            postChangeMessage('annotationStateChanged');
           });
 
           // Listen for when annotation layers are rendered (indicates new annotations)
-          eventBus._on('annotationlayerrendered', (evt) => {
-            postChangeMessage('annotationLayerRendered', {
-              pageNumber: evt.pageNumber
-            });
+          eventBus._on('annotationlayerrendered', () => {
+            postChangeMessage('annotationLayerRendered');
           });
 
           // Listen for when annotation editor layers are rendered (drawing/editing mode)
-          eventBus._on('annotationeditorlayerrendered', (evt) => {
-            postChangeMessage('annotationEditorLayerRendered', {
-              pageNumber: evt.pageNumber
-            });
+          eventBus._on('annotationeditorlayerrendered', () => {
+            postChangeMessage('annotationEditorLayerRendered');
           });
 
           // Hook into annotation storage setValue method to detect annotation data changes
@@ -821,44 +814,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 storage._originalSetValue = storage.setValue;
                 storage.setValue = function(key, value) {
                   const result = storage._originalSetValue.call(this, key, value);
-                  
-                  // Determine the type of annotation change based on the value
-                  let changeType = 'unknown';
-                  let annotationData = {};
-                  
-                  if (value && typeof value === 'object') {
-                    if (value.rect) {
-                      changeType = 'position';
-                      annotationData.rect = value.rect;
-                    }
-                    if (value.contents !== undefined) {
-                      changeType = 'text';
-                      annotationData.contents = value.contents;
-                    }
-                    if (value.color) {
-                      changeType = 'style';
-                      annotationData.color = value.color;
-                    }
-                    if (value.quadPoints) {
-                      changeType = 'highlight';
-                      annotationData.quadPoints = value.quadPoints;
-                    }
-                    if (value.inkLists) {
-                      changeType = 'drawing';
-                      annotationData.inkLists = value.inkLists;
-                    }
-                    if (value.rotation !== undefined) {
-                      changeType = 'rotation';
-                      annotationData.rotation = value.rotation;
-                    }
-                  }
-                  
-                  postChangeMessage('annotationDataChanged', {
-                    changeType: changeType,
-                    annotationKey: key,
-                    annotationData: annotationData
-                  });
-                  
+                  postChangeMessage('annotationDataChanged');
                   return result;
                 };
               }
@@ -868,9 +824,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 storage._originalRemoveValue = storage.removeValue;
                 storage.removeValue = function(key) {
                   const result = storage._originalRemoveValue.call(this, key);
-                  postChangeMessage('annotationDeleted', {
-                    annotationKey: key
-                  });
+                  postChangeMessage('annotationDeleted');
                   return result;
                 };
               }
@@ -882,31 +836,23 @@ See https://github.com/adobe-type-tools/cmap-resources
           
           hookAnnotationStorage();
 
-          // Add click/input listeners to catch direct annotation interactions
+          // Add input listeners to catch direct annotation text editing
           function addAnnotationListeners() {
             const viewerContainer = document.getElementById('viewerContainer');
             if (viewerContainer) {
-              // Listen for inputs on annotation elements (text editing)
+              // Listen for text inputs on annotation elements
               viewerContainer.addEventListener('input', (e) => {
-                if (e.target.closest('.annotationLayer') || 
-                    e.target.closest('.annotationEditorLayer') ||
+                if (e.target.closest('.annotationEditorLayer') ||
                     e.target.classList.contains('annotationEditor')) {
-                  postChangeMessage('annotationDirectEdit', {
-                    elementType: e.target.tagName,
-                    elementClass: e.target.className,
-                    value: e.target.value || e.target.textContent
-                  });
+                  postChangeMessage('annotationDirectEdit');
                 }
               }, true);
 
-              // Listen for focus changes to detect annotation editing start
+              // Listen for focus to detect annotation editing start
               viewerContainer.addEventListener('focusin', (e) => {
                 if (e.target.closest('.annotationEditorLayer') ||
                     e.target.classList.contains('annotationEditor')) {
-                  postChangeMessage('annotationEditStart', {
-                    elementType: e.target.tagName,
-                    elementClass: e.target.className
-                  });
+                  postChangeMessage('annotationEditStart');
                 }
               }, true);
             } else {
