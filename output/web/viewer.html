@@ -737,7 +737,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     <script>
       /**  Listen for the parent asking for a save, then return the bytes  **/
       window.addEventListener('message', async (e) => {
-        if (e.data?.type !== 'REQUEST_SAVE') return;
+        if (e.data?.type !== 'fileSaveRequest') return;
 
         const pdfDoc = window.PDFViewerApplication?.pdfDocument;
         if (!pdfDoc) return;          // PDF still loading
@@ -748,7 +748,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         // Transfer the ArrayBuffer back to React (zero-copy)
         e.source.postMessage(
-          { type: 'PDF_BYTES', bytes },
+          { type: 'annotationUploadReady', bytes },
           e.origin,
           [bytes.buffer]
         );
@@ -786,9 +786,9 @@ See https://github.com/adobe-type-tools/cmap-resources
             }
           }
 
-          // Listen for when annotations are committed/completed
-          eventBus._on('annotationcommitted', (event) => {
-            postChangeMessage('annotationCommitted');
+          // Listen for when annotations are added, edited, or deleted
+          eventBus._on('annotationeditorstateschanged', () => {
+            postChangeMessage('annotationStateChanged');
           });
         }
 

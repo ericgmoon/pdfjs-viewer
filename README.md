@@ -1,3 +1,11 @@
+# How to use this modified PDF.js Viewer
+1. Make changes you want, which is likely to `web/viewer.html`.
+2. Run `npx gulp generic` to export the viewer. This will create the build locally in `build/generic`. This built output is also copied to the `output` folder.
+3. Commit and push the changes to the private repository using `git push private master`.
+4. Pull the built files from the client repository.
+
+---
+
 # PDF.js [![CI](https://github.com/mozilla/pdf.js/actions/workflows/ci.yml/badge.svg?query=branch%3Amaster)](https://github.com/mozilla/pdf.js/actions/workflows/ci.yml?query=branch%3Amaster)
 
 [PDF.js](https://mozilla.github.io/pdf.js/) is a Portable Document Format (PDF) viewer that is built with HTML5.

@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.69
- * pdfjsBuild = 61f849d0b
+ * pdfjsVersion = 5.3.71
+ * pdfjsBuild = a2b02b6f3
  */
 
 ;// ./src/shared/util.js
@@ -3336,14 +3336,6 @@ class AnnotationEditorUIManager {
   addMissingCanvas(annotationId, editor) {
     (this.#missingCanvases ||= new Map()).set(annotationId, editor);
   }
-  notifyAnnotationCommitted(editor) {
-    this._eventBus.dispatch("annotationcommitted", {
-      source: this,
-      editor,
-      editorId: editor.id,
-      editorType: editor.constructor._type
-    });
-  }
 }
 
 ;// ./src/display/editor/alt_text.js
@@ -4024,7 +4016,6 @@ class AnnotationEditor {
   }
   commit() {
     this.addToAnnotationStorage();
-    this._uiManager.notifyAnnotationCommitted(this);
   }
   addToAnnotationStorage() {
     this._uiManager.addToAnnotationStorage(this);
@@ -11595,7 +11586,7 @@ function getDocument(src = {}) {
   }
   const docParams = {
     docId,
-    apiVersion: "5.3.69",
+    apiVersion: "5.3.71",
     data,
     password,
     disableAutoFetch,
@@ -13205,8 +13196,8 @@ class InternalRenderTask {
     }
   }
 }
-const version = "5.3.69";
-const build = "61f849d0b";
+const version = "5.3.71";
+const build = "a2b02b6f3";
 
 ;// ./src/shared/scripting_utils.js
 function makeColorComp(n) {
