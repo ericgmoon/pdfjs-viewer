@@ -2545,20 +2545,6 @@ class AnnotationEditorUIManager {
   addMissingCanvas(annotationId, editor) {
     (this.#missingCanvases ||= new Map()).set(annotationId, editor);
   }
-
-  /**
-   * Notify that an annotation has been committed/completed.
-   * @param {AnnotationEditor} editor
-   */
-  notifyAnnotationCommitted(editor) {
-    // Dispatch a specific event for annotation commits
-    this._eventBus.dispatch("annotationcommitted", {
-      source: this,
-      editor,
-      editorId: editor.id,
-      editorType: editor.constructor._type,
-    });
-  }
 }
 
 export {

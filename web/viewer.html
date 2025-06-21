@@ -859,9 +859,9 @@ See https://github.com/adobe-type-tools/cmap-resources
             }
           }
 
-          // Listen for when annotations are committed/completed
-          eventBus._on('annotationcommitted', (event) => {
-            postChangeMessage('annotationCommitted');
+          // Listen for when annotations are added, edited, or deleted
+          eventBus._on('annotationeditorstateschanged', () => {
+            postChangeMessage('annotationStateChanged');
           });
         }
 
