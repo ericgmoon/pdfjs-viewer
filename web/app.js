@@ -219,8 +219,8 @@ const PDFViewerApplication = {
     const params = new Map([...queryParams, ...hashParams]);
 
     // Handle user-friendly darkMode parameter (overrides viewerCssTheme)
-    if (params.has("darkMode")) {
-      const darkMode = params.get("darkMode");
+    if (params.has("darkmode")) {
+      const darkMode = params.get("darkmode");
       if (darkMode === "true") {
         AppOptions.set("viewerCssTheme", 2); // Dark theme
       } else if (darkMode === "false") {

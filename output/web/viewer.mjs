@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.72
- * pdfjsBuild = a4ce56b6f
+ * pdfjsVersion = 5.3.73
+ * pdfjsBuild = d4bc665f1
  */
 
 ;// ./web/pdfjs.js
@@ -11653,7 +11653,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.3.72";
+    const viewerVersion = "5.3.73";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -14861,8 +14861,8 @@ const PDFViewerApplication = {
     const queryParams = queryString ? parseQueryString(queryString) : new Map();
     const hashParams = hash ? parseQueryString(hash) : new Map();
     const params = new Map([...queryParams, ...hashParams]);
-    if (params.has("darkMode")) {
-      const darkMode = params.get("darkMode");
+    if (params.has("darkmode")) {
+      const darkMode = params.get("darkmode");
       if (darkMode === "true") {
         AppOptions.set("viewerCssTheme", 2);
       } else if (darkMode === "false") {
