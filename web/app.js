@@ -205,6 +205,33 @@ const PDFViewerApplication = {
       await this._parseHashParams();
     }
 
+    /**
+     * Custom Code: Parse query string and hash parameters
+     */
+    // Parse both query string and hash parameters
+    const queryString = document.location.search.substring(1);
+    const hash = document.location.hash.substring(1);
+
+    const queryParams = queryString ? parseQueryString(queryString) : new Map();
+    const hashParams = hash ? parseQueryString(hash) : new Map();
+
+    // Combine parameters (hash parameters take precedence over query params)
+    const params = new Map([...queryParams, ...hashParams]);
+
+    // Handle user-friendly darkMode parameter (overrides viewerCssTheme)
+    if (params.has("darkMode")) {
+      const darkMode = params.get("darkMode");
+      if (darkMode === "true") {
+        AppOptions.set("viewerCssTheme", 2); // Dark theme
+      } else if (darkMode === "false") {
+        AppOptions.set("viewerCssTheme", 1); // Light theme
+      }
+      // For any other value (like "auto"), keep the default (0 = system theme)
+    }
+    /**
+     * End of Custom Code
+     */
+
     let mode;
     switch (AppOptions.get("viewerCssTheme")) {
       case 1:
@@ -373,7 +400,6 @@ const PDFViewerApplication = {
         maxCanvasPixels: x => parseInt(x),
         spreadModeOnLoad: x => parseInt(x),
         supportsCaretBrowsingMode: x => x === "true",
-        viewerCssTheme: x => parseInt(x),
       });
     }
 
