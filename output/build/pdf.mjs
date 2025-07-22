@@ -17471,7 +17471,7 @@ class ColorPicker {
     }
     this.#uiManager = editor?._uiManager || uiManager;
     this.#eventBus = this.#uiManager._eventBus;
-    this.#defaultColor = editor?.color || this.#uiManager?.highlightColors.values().next().value || "#FFFF98";
+    this.#defaultColor = editor?.color || this.#uiManager?.highlightColors.values().next().value || "#FF4F5F";
     ColorPicker.#l10nColor ||= Object.freeze({
       blue: "pdfjs-editor-colorpicker-blue",
       green: "pdfjs-editor-colorpicker-green",
@@ -17853,7 +17853,7 @@ class HighlightEditor extends AnnotationEditor {
   }
   static initialize(l10n, uiManager) {
     AnnotationEditor.initialize(l10n, uiManager);
-    HighlightEditor._defaultColor ||= uiManager.highlightColors?.values().next().value || "#fff066";
+    HighlightEditor._defaultColor ||= uiManager.highlightColors?.values().next().value || "#FF4F5F";
   }
   static updateDefaultParams(type, value) {
     switch (type) {

@@ -104,7 +104,7 @@
     },
     "highlightEditorColors": {
       "type": "string",
-      "default": "yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6,red=#FF4F5F"
+      "default": "red=#FF4F5F,yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6"
     },
     "disableRange": {
       "title": "Disable range requests",

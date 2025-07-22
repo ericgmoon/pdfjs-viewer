@@ -80,7 +80,7 @@ class ColorPicker {
     this.#defaultColor =
       editor?.color ||
       this.#uiManager?.highlightColors.values().next().value ||
-      "#FFFF98";
+      "#FF4F5F";
 
     ColorPicker.#l10nColor ||= Object.freeze({
       blue: "pdfjs-editor-colorpicker-blue",
