@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.73
- * pdfjsBuild = d4bc665f1
+ * pdfjsVersion = 5.3.77
+ * pdfjsBuild = 9e3f3f06c
  */
 
 ;// ./src/shared/util.js
@@ -11586,7 +11586,7 @@ function getDocument(src = {}) {
   }
   const docParams = {
     docId,
-    apiVersion: "5.3.73",
+    apiVersion: "5.3.77",
     data,
     password,
     disableAutoFetch,
@@ -13196,8 +13196,8 @@ class InternalRenderTask {
     }
   }
 }
-const version = "5.3.73";
-const build = "d4bc665f1";
+const version = "5.3.77";
+const build = "9e3f3f06c";
 
 ;// ./src/shared/scripting_utils.js
 function makeColorComp(n) {
