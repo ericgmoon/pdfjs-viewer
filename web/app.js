@@ -3036,6 +3036,44 @@ function onKeyDown(evt) {
         this.pdfCursorTools?.switchTool(CursorTool.HAND);
         break;
 
+      case 84: // 't'
+        // Toggle FreeText (Text) annotation editor mode
+        eventBus.dispatch("switchannotationeditormode", {
+          source: window,
+          mode:
+            pdfViewer.annotationEditorMode === AnnotationEditorType.FREETEXT
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.FREETEXT,
+          // Commented out to avoid a text box being created on tool select
+          // isFromKeyboard: true,
+        });
+        handled = true;
+        break;
+      case 76: // 'l'
+        // Toggle Highlight annotation editor mode
+        eventBus.dispatch("switchannotationeditormode", {
+          source: window,
+          mode:
+            pdfViewer.annotationEditorMode === AnnotationEditorType.HIGHLIGHT
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.HIGHLIGHT,
+          isFromKeyboard: true,
+        });
+        handled = true;
+        break;
+      case 73: // 'i'
+        // Toggle Ink/Pen annotation editor mode
+        eventBus.dispatch("switchannotationeditormode", {
+          source: window,
+          mode:
+            pdfViewer.annotationEditorMode === AnnotationEditorType.INK
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.INK,
+          isFromKeyboard: true,
+        });
+        handled = true;
+        break;
+
       case 82: // 'r'
         this.rotatePages(90);
         break;
