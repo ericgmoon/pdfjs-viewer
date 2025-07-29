@@ -48,6 +48,10 @@ class Toolbar {
 
   #opts;
 
+  #currentAnnotationMode = AnnotationEditorType.NONE;
+
+  #paramToolbarHidden = false;
+
   /**
    * @param {ToolbarOptions} options
    * @param {EventBus} eventBus
@@ -199,6 +203,17 @@ class Toolbar {
     // The buttons within the toolbar.
     for (const { element, eventName, eventDetails, telemetry } of buttons) {
       element.addEventListener("click", evt => {
+        // Check if clicking on currently selected annotation tool while param
+        // toolbar is hidden
+        if (
+          this.#isCurrentAnnotationTool(element) &&
+          this.#paramToolbarHidden
+        ) {
+          this.#showCurrentParamToolbar();
+          evt.preventDefault();
+          return;
+        }
+
         if (eventName !== null) {
           eventBus.dispatch(eventName, {
             source: this,
@@ -263,6 +278,11 @@ class Toolbar {
     });
     eventBus._on("toolbardensity", this.#updateToolbarDensity.bind(this));
 
+    // Listen for annotation drawing start events
+    eventBus._on("annotationdrawingstarted", () => {
+      this.#hideCurrentParamToolbar();
+    });
+
     if (editorHighlightColorPicker) {
       eventBus._on("annotationeditoruimanager", ({ uiManager }) => {
         const cp = (this.#colorPicker = new ColorPicker({ uiManager }));
@@ -322,6 +342,100 @@ class Toolbar {
     editorInkButton.disabled = isDisable;
     editorStampButton.disabled = isDisable;
     editorSignatureButton.disabled = isDisable;
+
+    // Update current annotation mode and reset toolbar state
+    this.#currentAnnotationMode = mode;
+    this.#paramToolbarHidden = false;
+  }
+
+  #isCurrentAnnotationTool(element) {
+    const { editorFreeTextButton, editorHighlightButton, editorInkButton } =
+      this.#opts;
+
+    switch (this.#currentAnnotationMode) {
+      case AnnotationEditorType.FREETEXT:
+        return element === editorFreeTextButton;
+      case AnnotationEditorType.HIGHLIGHT:
+        return element === editorHighlightButton;
+      case AnnotationEditorType.INK:
+        return element === editorInkButton;
+      default:
+        return false;
+    }
+  }
+
+  #hideCurrentParamToolbar() {
+    const {
+      editorFreeTextButton,
+      editorFreeTextParamsToolbar,
+      editorHighlightButton,
+      editorHighlightParamsToolbar,
+      editorInkButton,
+      editorInkParamsToolbar,
+    } = this.#opts;
+
+    let currentButton = null;
+    let currentToolbar = null;
+
+    switch (this.#currentAnnotationMode) {
+      case AnnotationEditorType.FREETEXT:
+        currentButton = editorFreeTextButton;
+        currentToolbar = editorFreeTextParamsToolbar;
+        break;
+      case AnnotationEditorType.HIGHLIGHT:
+        currentButton = editorHighlightButton;
+        currentToolbar = editorHighlightParamsToolbar;
+        break;
+      case AnnotationEditorType.INK:
+        currentButton = editorInkButton;
+        currentToolbar = editorInkParamsToolbar;
+        break;
+    }
+
+    if (
+      currentButton &&
+      currentToolbar &&
+      currentButton.classList.contains("toggled")
+    ) {
+      // Hide the toolbar but keep the button in toggled state
+      currentToolbar.classList.add("hidden");
+      this.#paramToolbarHidden = true;
+    }
+  }
+
+  #showCurrentParamToolbar() {
+    const {
+      editorFreeTextButton,
+      editorFreeTextParamsToolbar,
+      editorHighlightButton,
+      editorHighlightParamsToolbar,
+      editorInkButton,
+      editorInkParamsToolbar,
+    } = this.#opts;
+
+    let currentButton = null;
+    let currentToolbar = null;
+
+    switch (this.#currentAnnotationMode) {
+      case AnnotationEditorType.FREETEXT:
+        currentButton = editorFreeTextButton;
+        currentToolbar = editorFreeTextParamsToolbar;
+        break;
+      case AnnotationEditorType.HIGHLIGHT:
+        currentButton = editorHighlightButton;
+        currentToolbar = editorHighlightParamsToolbar;
+        break;
+      case AnnotationEditorType.INK:
+        currentButton = editorInkButton;
+        currentToolbar = editorInkParamsToolbar;
+        break;
+    }
+
+    if (currentButton && currentToolbar && this.#paramToolbarHidden) {
+      // Show the toolbar while keeping the button in toggled state
+      currentToolbar.classList.remove("hidden");
+      this.#paramToolbarHidden = false;
+    }
   }
 
   #updateUIState(resetNumPages = false) {

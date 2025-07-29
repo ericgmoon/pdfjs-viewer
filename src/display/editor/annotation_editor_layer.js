@@ -404,6 +404,12 @@ class AnnotationEditorLayer {
       );
       this.#textLayer.div.classList.add("free");
       this.toggleDrawing();
+
+      // Dispatch event to indicate annotation drawing has started
+      this.#uiManager._eventBus.dispatch("annotationdrawingstarted", {
+        source: this,
+      });
+
       HighlightEditor.startHighlighting(
         this,
         this.#uiManager.direction === "ltr",
@@ -663,6 +669,15 @@ class AnnotationEditorLayer {
    */
   createAndAddNewEditor(event, isCentered, data = {}) {
     const id = this.getNextId();
+
+    // Dispatch event to indicate annotation creation has started
+    // for non-drawer editors (e.g., FREETEXT)
+    if (!this.#currentEditorType?.isDrawer) {
+      this.#uiManager._eventBus.dispatch("annotationdrawingstarted", {
+        source: this,
+      });
+    }
+
     const editor = this.#createNewEditor({
       parent: this,
       id,
@@ -820,6 +835,12 @@ class AnnotationEditorLayer {
     this.div.focus({
       preventScroll: true,
     });
+
+    // Dispatch event to indicate annotation drawing has started
+    this.#uiManager._eventBus.dispatch("annotationdrawingstarted", {
+      source: this,
+    });
+
     if (this.#drawingAC) {
       this.#currentEditorType.startDrawing(this, this.#uiManager, false, event);
       return;
