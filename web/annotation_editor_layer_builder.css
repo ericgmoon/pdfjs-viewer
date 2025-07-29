@@ -512,13 +512,17 @@
 .annotationEditorLayer .freeTextEditor .internal {
   background: transparent;
   border: none;
-  inset: 0;
   overflow: visible;
-  white-space: nowrap;
+  white-space: pre-wrap;
+  word-wrap: break-word;
   font: 10px sans-serif;
   line-height: var(--freetext-line-height);
   text-align: start;
   user-select: none;
+  width: 100%;
+  height: auto;
+  min-height: 1em;
+  pointer-events: auto;
 }
 
 .annotationEditorLayer .freeTextEditor .overlay {
@@ -542,6 +546,7 @@
 .annotationEditorLayer .freeTextEditor .internal:focus {
   outline: none;
   user-select: auto;
+  pointer-events: auto;
 }
 
 .annotationEditorLayer .inkEditor {
@@ -618,6 +623,7 @@
     & > .resizers {
       position: absolute;
       inset: 0;
+      pointer-events: none;
 
       &.hidden {
         display: none;
@@ -630,6 +636,7 @@
         border: var(--focus-outline-around);
         border-radius: 2px;
         position: absolute;
+        pointer-events: auto;
 
         &.topLeft {
           top: var(--resizer-shift);
