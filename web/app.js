@@ -1232,7 +1232,11 @@ const PDFViewerApplication = {
     await this.pdfScriptingManager.dispatchWillSave();
 
     try {
-      const data = await this.pdfDocument.saveDocument();
+      // Use getData() when annotationStorage is empty, saveDocument() otherwise
+      const data =
+        this.pdfDocument?.annotationStorage.size > 0
+          ? await this.pdfDocument.saveDocument()
+          : await this.pdfDocument.getData();
       this.downloadManager.download(data, this._downloadUrl, this._docFilename);
     } catch (reason) {
       // When the PDF document isn't ready, fallback to a "regular" download.
