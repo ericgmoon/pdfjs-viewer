@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.77
- * pdfjsBuild = 9e3f3f06c
+ * pdfjsVersion = 5.3.80
+ * pdfjsBuild = 536a74002
  */
 
 ;// ./web/pdfjs.js
@@ -11653,7 +11653,7 @@ class PDFViewer {
   #supportsPinchToZoom = true;
   #textLayerMode = TextLayerMode.ENABLE;
   constructor(options) {
-    const viewerVersion = "5.3.77";
+    const viewerVersion = "5.3.80";
     if (version !== viewerVersion) {
       throw new Error(`The API version "${version}" does not match the Viewer version "${viewerVersion}".`);
     }
@@ -14374,6 +14374,8 @@ class EditDescriptionDialog {
 class Toolbar {
   #colorPicker = null;
   #opts;
+  #currentAnnotationMode = AnnotationEditorType.NONE;
+  #paramToolbarHidden = false;
   constructor(options, eventBus, toolbarDensity = 0) {
     this.#opts = options;
     this.eventBus = eventBus;
@@ -14524,6 +14526,11 @@ class Toolbar {
       telemetry
     } of buttons) {
       element.addEventListener("click", evt => {
+        if (this.#isCurrentAnnotationTool(element) && this.#paramToolbarHidden) {
+          this.#showCurrentParamToolbar();
+          evt.preventDefault();
+          return;
+        }
         if (eventName !== null) {
           eventBus.dispatch(eventName, {
             source: this,
@@ -14576,6 +14583,9 @@ class Toolbar {
       }
     });
     eventBus._on("toolbardensity", this.#updateToolbarDensity.bind(this));
+    eventBus._on("annotationdrawingstarted", () => {
+      this.#hideCurrentParamToolbar();
+    });
     if (editorHighlightColorPicker) {
       eventBus._on("annotationeditoruimanager", ({
         uiManager
@@ -14619,6 +14629,85 @@ class Toolbar {
     editorInkButton.disabled = isDisable;
     editorStampButton.disabled = isDisable;
     editorSignatureButton.disabled = isDisable;
+    this.#currentAnnotationMode = mode;
+    this.#paramToolbarHidden = false;
+  }
+  #isCurrentAnnotationTool(element) {
+    const {
+      editorFreeTextButton,
+      editorHighlightButton,
+      editorInkButton
+    } = this.#opts;
+    switch (this.#currentAnnotationMode) {
+      case AnnotationEditorType.FREETEXT:
+        return element === editorFreeTextButton;
+      case AnnotationEditorType.HIGHLIGHT:
+        return element === editorHighlightButton;
+      case AnnotationEditorType.INK:
+        return element === editorInkButton;
+      default:
+        return false;
+    }
+  }
+  #hideCurrentParamToolbar() {
+    const {
+      editorFreeTextButton,
+      editorFreeTextParamsToolbar,
+      editorHighlightButton,
+      editorHighlightParamsToolbar,
+      editorInkButton,
+      editorInkParamsToolbar
+    } = this.#opts;
+    let currentButton = null;
+    let currentToolbar = null;
+    switch (this.#currentAnnotationMode) {
+      case AnnotationEditorType.FREETEXT:
+        currentButton = editorFreeTextButton;
+        currentToolbar = editorFreeTextParamsToolbar;
+        break;
+      case AnnotationEditorType.HIGHLIGHT:
+        currentButton = editorHighlightButton;
+        currentToolbar = editorHighlightParamsToolbar;
+        break;
+      case AnnotationEditorType.INK:
+        currentButton = editorInkButton;
+        currentToolbar = editorInkParamsToolbar;
+        break;
+    }
+    if (currentButton && currentToolbar && currentButton.classList.contains("toggled")) {
+      currentToolbar.classList.add("hidden");
+      this.#paramToolbarHidden = true;
+    }
+  }
+  #showCurrentParamToolbar() {
+    const {
+      editorFreeTextButton,
+      editorFreeTextParamsToolbar,
+      editorHighlightButton,
+      editorHighlightParamsToolbar,
+      editorInkButton,
+      editorInkParamsToolbar
+    } = this.#opts;
+    let currentButton = null;
+    let currentToolbar = null;
+    switch (this.#currentAnnotationMode) {
+      case AnnotationEditorType.FREETEXT:
+        currentButton = editorFreeTextButton;
+        currentToolbar = editorFreeTextParamsToolbar;
+        break;
+      case AnnotationEditorType.HIGHLIGHT:
+        currentButton = editorHighlightButton;
+        currentToolbar = editorHighlightParamsToolbar;
+        break;
+      case AnnotationEditorType.INK:
+        currentButton = editorInkButton;
+        currentToolbar = editorInkParamsToolbar;
+        break;
+    }
+    if (currentButton && currentToolbar && this.#paramToolbarHidden) {
+      currentToolbar.classList.remove("hidden");
+      this.#paramToolbarHidden = false;
+    }
   }
   #updateUIState(resetNumPages = false) {
     const {
@@ -15499,7 +15588,7 @@ const PDFViewerApplication = {
     this._saveInProgress = true;
     await this.pdfScriptingManager.dispatchWillSave();
     try {
-      const data = await this.pdfDocument.saveDocument();
+      const data = this.pdfDocument?.annotationStorage.size > 0 ? await this.pdfDocument.saveDocument() : await this.pdfDocument.getData();
       this.downloadManager.download(data, this._downloadUrl, this._docFilename);
     } catch (reason) {
       console.error(`Error when saving the document:`, reason);

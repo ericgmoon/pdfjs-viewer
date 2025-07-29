@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.77
- * pdfjsBuild = 9e3f3f06c
+ * pdfjsVersion = 5.3.80
+ * pdfjsBuild = 536a74002
  */
 
 ;// ./src/shared/util.js
@@ -11586,7 +11586,7 @@ function getDocument(src = {}) {
   }
   const docParams = {
     docId,
-    apiVersion: "5.3.77",
+    apiVersion: "5.3.80",
     data,
     password,
     disableAutoFetch,
@@ -13196,8 +13196,8 @@ class InternalRenderTask {
     }
   }
 }
-const version = "5.3.77";
-const build = "9e3f3f06c";
+const version = "5.3.80";
+const build = "536a74002";
 
 ;// ./src/shared/scripting_utils.js
 function makeColorComp(n) {
@@ -21948,6 +21948,9 @@ class AnnotationEditorLayer {
       this.#uiManager.showAllEditors("highlight", true, true);
       this.#textLayer.div.classList.add("free");
       this.toggleDrawing();
+      this.#uiManager._eventBus.dispatch("annotationdrawingstarted", {
+        source: this
+      });
       HighlightEditor.startHighlighting(this, this.#uiManager.direction === "ltr", {
         target: this.#textLayer.div,
         x: event.x,
@@ -22128,6 +22131,11 @@ class AnnotationEditorLayer {
   }
   createAndAddNewEditor(event, isCentered, data = {}) {
     const id = this.getNextId();
+    if (!this.#currentEditorType?.isDrawer) {
+      this.#uiManager._eventBus.dispatch("annotationdrawingstarted", {
+        source: this
+      });
+    }
     const editor = this.#createNewEditor({
       parent: this,
       id,
@@ -22229,6 +22237,9 @@ class AnnotationEditorLayer {
   startDrawingSession(event) {
     this.div.focus({
       preventScroll: true
+    });
+    this.#uiManager._eventBus.dispatch("annotationdrawingstarted", {
+      source: this
     });
     if (this.#drawingAC) {
       this.#currentEditorType.startDrawing(this, this.#uiManager, false, event);
