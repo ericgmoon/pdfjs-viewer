@@ -873,5 +873,55 @@ See https://github.com/adobe-type-tools/cmap-resources
         }
       })();
     </script>
+
+    <!-- PDF Tool Toggle Script -->
+    <script>
+      (function() {
+        'use strict';
+        
+        function initToolToggleListener() {
+          // Wait for PDF.js to be ready
+          if (typeof window.PDFViewerApplication === 'undefined') {
+            setTimeout(initToolToggleListener, 100);
+            return;
+          }
+
+          // Listen for tool toggle messages
+          window.addEventListener('message', (event) => {
+            if (!event.data || !event.data.type) return;
+
+            const { type } = event.data;
+            
+            let buttonId;
+            switch (type) {
+              case 'toggleInkTool':
+                buttonId = 'editorInkButton';
+                break;
+              case 'toggleHighlightTool':
+                buttonId = 'editorHighlightButton';
+                break;
+              case 'toggleFreeTextTool':
+                buttonId = 'editorFreeTextButton';
+                break;
+              default:
+                return; // Unknown message type
+            }
+
+            // Find and click the corresponding button
+            const button = document.getElementById(buttonId);
+            if (button && !button.disabled) {
+              button.click();
+            }
+          });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initToolToggleListener);
+        } else {
+          initToolToggleListener();
+        }
+      })();
+    </script>
   </body>
 </html>
