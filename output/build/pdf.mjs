@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.83
- * pdfjsBuild = 07ac2fdec
+ * pdfjsVersion = 5.3.85
+ * pdfjsBuild = 94b06b2ff
  */
 
 ;// ./src/shared/util.js
@@ -11586,7 +11586,7 @@ function getDocument(src = {}) {
   }
   const docParams = {
     docId,
-    apiVersion: "5.3.83",
+    apiVersion: "5.3.85",
     data,
     password,
     disableAutoFetch,
@@ -13196,8 +13196,8 @@ class InternalRenderTask {
     }
   }
 }
-const version = "5.3.83";
-const build = "07ac2fdec";
+const version = "5.3.85";
+const build = "94b06b2ff";
 
 ;// ./src/shared/scripting_utils.js
 function makeColorComp(n) {
@@ -16254,25 +16254,6 @@ class FreeTextEditor extends AnnotationEditor {
   get propertiesToUpdate() {
     return [[AnnotationEditorParamsType.FREETEXT_SIZE, this.#fontSize], [AnnotationEditorParamsType.FREETEXT_COLOR, this.#color]];
   }
-  get isResizable() {
-    return true;
-  }
-  makeResizable() {
-    if (!this.isResizable) {
-      return;
-    }
-    super.makeResizable();
-    const resizersDiv = this.div.querySelector(".resizers");
-    if (resizersDiv) {
-      const resizers = resizersDiv.querySelectorAll(".resizer");
-      resizers.forEach(resizer => {
-        const name = resizer.getAttribute("data-resizer-name");
-        if (name !== "middleRight" && name !== "middleLeft") {
-          resizer.style.display = "none";
-        }
-      });
-    }
-  }
   #updateFontSize(fontSize) {
     const setFontsize = size => {
       this.editorDiv.style.fontSize = `calc(${size}px * var(--total-scale-factor))`;
@@ -16443,27 +16424,6 @@ class FreeTextEditor extends AnnotationEditor {
       this.height = rect.width / parentHeight;
     }
     this.fixAndSetPosition();
-  }
-  _onResizing() {
-    this.#updateWidth();
-  }
-  _onResized() {
-    this.#updateWidth();
-  }
-  setDims(width, height) {
-    this.#updateWidth(width);
-  }
-  #updateWidth(width) {
-    if (this.editorDiv) {
-      const [parentWidth] = this.parentDimensions;
-      const divWidth = width ?? this.width;
-      const editorWidth = parentWidth * divWidth;
-      if (width) {
-        this.div.style.width = `${(100 * divWidth / parentWidth).toFixed(2)}%`;
-      }
-      this.editorDiv.style.width = `${editorWidth}px`;
-      this.editorDiv.style.maxWidth = `${editorWidth}px`;
-    }
   }
   commit() {
     if (!this.isInEditMode()) {

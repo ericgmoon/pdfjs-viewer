@@ -3444,19 +3444,15 @@
 .annotationEditorLayer .freeTextEditor .internal{
   background:transparent;
   border:none;
+  inset:0;
   overflow:visible;
-  white-space:pre-wrap;
-  word-wrap:break-word;
+  white-space:nowrap;
   font:10px sans-serif;
   line-height:var(--freetext-line-height);
   text-align:start;
   -webkit-user-select:none;
      -moz-user-select:none;
           user-select:none;
-  width:100%;
-  height:auto;
-  min-height:1em;
-  pointer-events:auto;
 }
 
 .annotationEditorLayer .freeTextEditor .overlay{
@@ -3482,7 +3478,6 @@
   -webkit-user-select:auto;
      -moz-user-select:auto;
           user-select:auto;
-  pointer-events:auto;
 }
 
 .annotationEditorLayer .inkEditor{
@@ -3588,7 +3583,6 @@
 :is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.signatureEditor)) > .resizers{
       position:absolute;
       inset:0;
-      pointer-events:none;
     }
 
 .hidden:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.signatureEditor)) > .resizers){
@@ -3602,7 +3596,6 @@
         border:var(--focus-outline-around);
         border-radius:2px;
         position:absolute;
-        pointer-events:auto;
       }
 
 .topLeft:is(:is(:is(.annotationEditorLayer :is(.freeTextEditor,.inkEditor,.stampEditor,.signatureEditor)) > .resizers) > .resizer){
