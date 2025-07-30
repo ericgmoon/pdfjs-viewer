@@ -801,43 +801,84 @@ See https://github.com/adobe-type-tools/cmap-resources
       })();
     </script>
 
-    <!-- PDF Tool Toggle Script -->
+    <!-- PDF Remote Control Script -->
     <script>
       (function() {
         'use strict';
         
-        function initToolToggleListener() {
+        function initRemoteControlListener() {
           // Wait for PDF.js to be ready
           if (typeof window.PDFViewerApplication === 'undefined') {
-            setTimeout(initToolToggleListener, 100);
+            setTimeout(initRemoteControlListener, 100);
             return;
           }
 
-          // Listen for tool toggle messages
+          // Listen for remote control messages
           window.addEventListener('message', (event) => {
             if (!event.data || !event.data.type) return;
 
             const { type } = event.data;
             
-            let buttonId;
             switch (type) {
               case 'toggleInkTool':
-                buttonId = 'editorInkButton';
+                {
+                  const button = document.getElementById('editorInkButton');
+                  if (button && !button.disabled) {
+                    button.click();
+                  }
+                }
                 break;
               case 'toggleHighlightTool':
-                buttonId = 'editorHighlightButton';
+                {
+                  const button = document.getElementById('editorHighlightButton');
+                  if (button && !button.disabled) {
+                    button.click();
+                  }
+                }
                 break;
               case 'toggleFreeTextTool':
-                buttonId = 'editorFreeTextButton';
+                {
+                  const button = document.getElementById('editorFreeTextButton');
+                  if (button && !button.disabled) {
+                    button.click();
+                  }
+                }
+                break;
+              case 'goNextPage':
+                {
+                  const button = document.getElementById('next');
+                  if (button && !button.disabled) {
+                    button.click();
+                  }
+                }
+                break;
+              case 'goPreviousPage':
+                {
+                  const button = document.getElementById('previous');
+                  if (button && !button.disabled) {
+                    button.click();
+                  }
+                }
+                break;
+              case 'rotatePage':
+                {
+                  const button = document.getElementById('pageRotateCw');
+                  if (button && !button.disabled) {
+                    button.click();
+                  }
+                }
+                break;
+              case 'updatePageNumber':
+                {
+                  const pageNumberInput = document.getElementById('pageNumber');
+                  if (pageNumberInput) {
+                    pageNumberInput.focus();
+                    pageNumberInput.select();
+                  }
+                }
                 break;
               default:
                 return; // Unknown message type
-            }
-
-            // Find and click the corresponding button
-            const button = document.getElementById(buttonId);
-            if (button && !button.disabled) {
-              button.click();
             }
           });
         }
