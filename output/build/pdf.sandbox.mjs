@@ -21,8 +21,8 @@
  */
 
 /**
- * pdfjsVersion = 5.3.88
- * pdfjsBuild = 4722dedac
+ * pdfjsVersion = 5.3.89
+ * pdfjsBuild = 06be81585
  */
 
 ;// ./external/quickjs/quickjs-eval.js

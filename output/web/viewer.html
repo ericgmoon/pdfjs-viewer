@@ -815,6 +815,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
           // Listen for remote control messages
           window.addEventListener('message', (event) => {
+            console.log(event);
             if (!event.data || !event.data.type) return;
 
             const { type } = event.data;
