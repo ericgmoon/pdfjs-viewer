@@ -199,33 +199,6 @@ class FreeTextEditor extends AnnotationEditor {
     ];
   }
 
-  /** @inheritdoc */
-  get isResizable() {
-    return true;
-  }
-
-  /** @inheritdoc */
-  makeResizable() {
-    if (!this.isResizable) {
-      return;
-    }
-
-    // Call parent's makeResizable to create all resizers
-    super.makeResizable();
-
-    // Hide all resizers except middleRight and middleLeft
-    const resizersDiv = this.div.querySelector(".resizers");
-    if (resizersDiv) {
-      const resizers = resizersDiv.querySelectorAll(".resizer");
-      resizers.forEach(resizer => {
-        const name = resizer.getAttribute("data-resizer-name");
-        if (name !== "middleRight" && name !== "middleLeft") {
-          resizer.style.display = "none";
-        }
-      });
-    }
-  }
-
   /**
    * Update the font size and make this action as undoable.
    * @param {number} fontSize
@@ -468,38 +441,6 @@ class FreeTextEditor extends AnnotationEditor {
       this.height = rect.width / parentHeight;
     }
     this.fixAndSetPosition();
-  }
-
-  /** @inheritdoc */
-  _onResizing() {
-    this.#updateWidth();
-  }
-
-  /** @inheritdoc */
-  _onResized() {
-    this.#updateWidth();
-  }
-
-  /** @inheritdoc */
-  setDims(width, height) {
-    this.#updateWidth(width);
-  }
-
-  #updateWidth(width) {
-    // For text editors, when width changes, update the text container width
-    // to enable text wrapping and adjust height
-    if (this.editorDiv) {
-      const [parentWidth] = this.parentDimensions;
-      const divWidth = width ?? this.width;
-      const editorWidth = parentWidth * divWidth;
-
-      // Set the width constraint for text wrapping
-      if (width) {
-        this.div.style.width = `${((100 * divWidth) / parentWidth).toFixed(2)}%`;
-      }
-      this.editorDiv.style.width = `${editorWidth}px`;
-      this.editorDiv.style.maxWidth = `${editorWidth}px`;
-    }
   }
 
   /**
