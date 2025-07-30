@@ -888,7 +888,6 @@ See https://github.com/adobe-type-tools/cmap-resources
 
           // Listen for remote control messages
           window.addEventListener('message', (event) => {
-            console.log(event);
             if (!event.data || !event.data.type) return;
 
             const { type } = event.data;
@@ -959,9 +958,9 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         // Initialize when DOM is ready
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initToolToggleListener);
+          document.addEventListener('DOMContentLoaded', initRemoteControlListener);
         } else {
-          initToolToggleListener();
+          initRemoteControlListener();
         }
       })();
     </script>
